@@ -1,0 +1,46 @@
+<div class="employer-page">
+  <app-topbar />
+
+  <div class="search-block glass-panel card-hover-lift">
+    <input
+      class="search"
+      [(ngModel)]="tokenInput"
+      name="token"
+      type="text"
+      placeholder="Enter certificate token ID (try 1, 2, or 3)"
+    />
+    <button type="button" class="verify-btn btn-interactive" [disabled]="loadingVerify" (click)="verify()">
+      {{ loadingVerify ? 'Verifying…' : 'Verify Certificate' }}
+    </button>
+  </div>
+
+  @if (loadingVerify) {
+    <div class="skeleton skeleton-block glass-panel" aria-hidden="true">
+      <div class="skeleton skeleton-line"></div>
+      <div class="skeleton skeleton-line short"></div>
+      <div class="skeleton skeleton-line"></div>
+    </div>
+  }
+
+  @if (!loadingVerify && status === 'verified') {
+    <div class="badge ok">
+      <span class="check">✓</span>
+      VERIFIED
+    </div>
+  }
+  @if (!loadingVerify && status === 'invalid' && tokenInput.trim()) {
+    <div class="badge bad">INVALID</div>
+  }
+
+  @if (certificate && !loadingVerify) {
+    <div class="details-grid">
+      <div class="glass-panel card-hover-lift"><span>Student</span><strong>{{ certificate.studentName }}</strong></div>
+      <div class="glass-panel card-hover-lift"><span>Course</span><strong>{{ certificate.courseName }}</strong></div>
+      <div class="glass-panel card-hover-lift"><span>Grade</span><strong>{{ certificate.grade }}</strong></div>
+      <div class="glass-panel card-hover-lift"><span>Wallet</span><strong>{{ certificate.studentWallet }}</strong></div>
+      <div class="glass-panel card-hover-lift"><span>Institution</span><strong>{{ certificate.institution }}</strong></div>
+      <div class="glass-panel card-hover-lift"><span>Issued</span><strong>{{ certificate.issuedDate }}</strong></div>
+      <div class="glass-panel card-hover-lift"><span>Revoked</span><strong>{{ certificate.isRevoked ? 'Yes' : 'No' }}</strong></div>
+    </div>
+  }
+</div>

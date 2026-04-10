@@ -1,0 +1,15 @@
+<div class="toast-stack" role="status" aria-live="polite">
+  @for (t of toast.toasts(); track t.id) {
+    <div
+      class="toast"
+      [class.toast-success]="t.type === 'success'"
+      [class.toast-error]="t.type === 'error'"
+      (click)="toast.dismiss(t.id)"
+      (keyup.enter)="toast.dismiss(t.id)"
+      tabindex="0"
+    >
+      <span class="toast-icon">{{ t.type === 'success' ? '✓' : '!' }}</span>
+      <span class="toast-text">{{ t.text }}</span>
+    </div>
+  }
+</div>

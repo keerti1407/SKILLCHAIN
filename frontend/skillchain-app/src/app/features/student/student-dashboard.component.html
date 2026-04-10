@@ -1,0 +1,94 @@
+<div class="student-page">
+  <app-topbar />
+
+  <div class="toolbar">
+    <button type="button" class="connect btn-interactive" (click)="connectWallet()" [disabled]="connecting">
+      {{ connecting ? 'Connecting…' : 'Connect wallet' }}
+    </button>
+  </div>
+
+  <div class="gradient-border-wrap passport-wrap section-important card-hover-lift">
+    <div class="inner">
+      <h1 class="passport-title">My Skill Passport</h1>
+    </div>
+  </div>
+
+  @if (loadError) {
+    <p class="err">{{ loadError }}</p>
+  }
+  @if (skillsError) {
+    <p class="warn">{{ skillsError }}</p>
+  }
+
+  <div class="layout">
+    <div class="main">
+      @if (!auth.getWallet()) {
+        <p class="empty">Sign in as a student to view your Skill Passport.</p>
+      } @else if (loadingCerts) {
+        <div class="card-grid skeleton-grid">
+          @for (s of [1, 2, 3]; track s) {
+            <div class="skeleton skeleton-card">
+              <div class="skeleton skeleton-line"></div>
+              <div class="skeleton skeleton-line short"></div>
+              <div class="skeleton skeleton-line"></div>
+            </div>
+          }
+        </div>
+      } @else if (!loadingCerts && certificates.length === 0) {
+        <p class="empty">No certificates yet</p>
+      } @else if (!loadingCerts && certificates.length > 0) {
+        <div class="card-grid">
+          @for (c of certificates; track c.tokenId) {
+            <div
+              class="flip-wrap card-hover-lift glass-panel"
+              [class.flipped]="isFlipped(c.tokenId)"
+              [class.gold]="c.grade === 'A+'"
+              (click)="toggleFlip(c.tokenId)"
+              (keyup.enter)="toggleFlip(c.tokenId)"
+              tabindex="0"
+              role="button"
+            >
+              <div class="flip-inner">
+                <div class="face front holo">
+                  <h3>{{ c.studentName }}</h3>
+                  <p class="course">{{ c.courseName }}</p>
+                  <p class="grade">{{ c.grade }}</p>
+                  <p class="date">{{ c.issuedDate | date: 'medium' }}</p>
+                </div>
+                <div class="face back holo">
+                  <p class="token">Token #{{ c.tokenId }}</p>
+                  <p class="proof">Scan to verify on SkillChain (public URL).</p>
+                  @if (qrMap[c.tokenId]) {
+                    <img [src]="qrMap[c.tokenId]" alt="Verify QR" class="qr" />
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <aside class="ai-panel glass">
+      <h2>AI Skill Suggester</h2>
+      <p class="ai-desc">Based on your course names, discover what to learn next.</p>
+      <div class="skill-cards">
+        <div class="skill s1 card-hover-lift">{{ skills[0] }}</div>
+        <div class="skill s2 card-hover-lift">{{ skills[1] }}</div>
+        <div class="skill s3 card-hover-lift">{{ skills[2] }}</div>
+      </div>
+      <button
+        type="button"
+        class="suggest-btn btn-interactive"
+        (click)="suggest()"
+        [disabled]="loadingSkills || certificates.length === 0"
+      >
+        @if (loadingSkills) {
+          <span class="spinner"></span>
+        } @else {
+          Suggest Next Skills
+        }
+      </button>
+    </aside>
+  </div>
+</div>

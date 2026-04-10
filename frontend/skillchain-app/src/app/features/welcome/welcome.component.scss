@@ -1,0 +1,189 @@
+.welcome {
+  min-height: 100vh;
+  background: #0a0a1a;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  opacity: 0.65;
+  animation: float-p 12s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.4s);
+  left: calc(var(--i) * 4.8%);
+  top: calc(var(--i) * 3.2%);
+  background: hsl(calc(var(--i) * 18), 85%, 60%);
+  box-shadow: 0 0 12px currentColor;
+}
+
+.floating-cards {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.nft-card {
+  position: absolute;
+  width: 120px;
+  height: 160px;
+  border-radius: 16px;
+  animation: float-card 8s ease-in-out infinite;
+  opacity: 0.35;
+  filter: blur(0.5px);
+}
+
+.c1 {
+  top: 12%;
+  left: 8%;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  animation-delay: 0s;
+}
+
+.c2 {
+  top: 55%;
+  left: 12%;
+  background: linear-gradient(135deg, #06b6d4, #3b82f6);
+  animation-delay: 1.2s;
+}
+
+.c3 {
+  top: 18%;
+  right: 10%;
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  animation-delay: 0.6s;
+}
+
+.c4 {
+  bottom: 14%;
+  right: 16%;
+  background: linear-gradient(135deg, #f97316, #eab308);
+  animation-delay: 2s;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 720px;
+}
+
+.title {
+  font-size: clamp(2.8rem, 8vw, 4.5rem);
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+  background: linear-gradient(
+    90deg,
+    #ef4444,
+    #f97316,
+    #eab308,
+    #22c55e,
+    #06b6d4,
+    #8b5cf6,
+    #ec4899
+  );
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rainbow 5s linear infinite, typewriter-glow 2.5s ease-in-out infinite alternate;
+}
+
+.typewriter {
+  letter-spacing: 0.04em;
+}
+
+.tagline {
+  font-size: 1.25rem;
+  color: #cbd5e1;
+  margin: 0 0 0.5rem;
+}
+
+.sub {
+  color: #94a3b8;
+  margin: 0 0 2rem;
+}
+
+.enter-btn {
+  cursor: pointer;
+  border: none;
+  padding: 0.95rem 2.4rem;
+  border-radius: 999px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #0a0a1a;
+  background: linear-gradient(90deg, #8b5cf6, #ec4899, #06b6d4);
+  background-size: 200% auto;
+  animation: shimmer 2.5s linear infinite;
+  box-shadow: 0 0 28px rgba(236, 72, 153, 0.55);
+  transition: transform 0.2s ease;
+}
+
+.enter-btn:hover {
+  transform: scale(1.05);
+}
+
+.countdown {
+  margin-top: 1.75rem;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+@keyframes float-p {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(-30px) translateX(10px);
+  }
+}
+
+@keyframes float-card {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-18px) rotate(4deg);
+  }
+}
+
+@keyframes rainbow {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 300% center;
+  }
+}
+
+@keyframes typewriter-glow {
+  0% {
+    filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.4));
+  }
+  100% {
+    filter: drop-shadow(0 0 18px rgba(6, 182, 212, 0.55));
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}

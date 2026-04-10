@@ -1,0 +1,22 @@
+<div class="welcome">
+  <div class="particles" aria-hidden="true">
+    @for (p of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]; track p) {
+      <span class="particle" [style.--i]="p"></span>
+    }
+  </div>
+
+  <div class="floating-cards" aria-hidden="true">
+    <div class="nft-card c1"></div>
+    <div class="nft-card c2"></div>
+    <div class="nft-card c3"></div>
+    <div class="nft-card c4"></div>
+  </div>
+
+  <div class="content">
+    <h1 class="title typewriter">SkillChain</h1>
+    <p class="tagline">The Future of Verified Credentials</p>
+    <p class="sub">Tamper-proof NFT certificates on blockchain</p>
+    <button type="button" class="enter-btn" (click)="enter()">Enter SkillChain</button>
+    <p class="countdown">Auto-redirecting in {{ countdown > 0 ? countdown : 0 }} seconds...</p>
+  </div>
+</div>

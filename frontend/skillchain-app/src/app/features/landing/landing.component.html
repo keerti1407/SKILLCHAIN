@@ -1,0 +1,95 @@
+<div class="landing">
+  <nav class="nav glass sticky">
+    <div class="nav-inner">
+      <span class="logo">SkillChain</span>
+      <div class="nav-right">
+        @if (auth.isLoggedIn()) {
+          <span class="hint">Wallet: {{ shortWallet() }}</span>
+        }
+        <a routerLink="/login" class="btn-login">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Credential infrastructure for the <span class="grad">open web</span></h1>
+      <p class="lead">
+        SkillChain turns achievements into NFT certificates — verifiable by anyone, owned by learners.
+      </p>
+      <div class="cta-row">
+        <a routerLink="/login" [queryParams]="{ role: 'student' }" class="btn primary">Start as Student</a>
+        <a routerLink="/verify/1" class="btn ghost">Try public verify</a>
+      </div>
+      <p class="tiny">Web3 service ready: {{ web3.getWalletAddress() ? 'wallet linked' : 'connect from student dashboard' }}</p>
+    </div>
+    <div class="hero-visual">
+      <div class="card-3d">
+        <div class="card-face">NFT</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats">
+    @for (s of statMeta; track s.label; let i = $index) {
+      <div class="stat-card" [class]="s.color">
+        <div class="stat-value">{{ counters[i] }}{{ s.suffix }}</div>
+        <div class="stat-label">{{ s.label }}</div>
+      </div>
+    }
+  </section>
+
+  <section class="section">
+    <h2>How it works</h2>
+    <div class="steps">
+      @for (step of steps; track step.title) {
+        <article class="step-card" [style.--accent]="step.color">
+          <h3>{{ step.title }}</h3>
+          <p>{{ step.desc }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Features</h2>
+    <div class="feature-grid">
+      @for (f of features; track f.title) {
+        <article class="feature-card" [style.--fc]="f.color">
+          <h3>{{ f.title }}</h3>
+          <p>{{ f.desc }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="section roles">
+    <h2>Who can use SkillChain</h2>
+    <div class="role-grid">
+      <article class="role-card institution">
+        <h3>Institution</h3>
+        <p>Issue credentials to cohorts with one control center.</p>
+        <a routerLink="/login" [queryParams]="{ role: 'institution' }" class="role-btn">Login as Institution</a>
+      </article>
+      <article class="role-card student">
+        <h3>Student</h3>
+        <p>Collect your Skill Passport as soulbound-style proofs.</p>
+        <a routerLink="/login" [queryParams]="{ role: 'student' }" class="role-btn">Login as Student</a>
+      </article>
+      <article class="role-card employer">
+        <h3>Employer</h3>
+        <p>Verify candidates before the first interview.</p>
+        <a routerLink="/login" [queryParams]="{ role: 'employer' }" class="role-btn">Login as Employer</a>
+      </article>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div>
+      <strong class="logo">SkillChain</strong>
+      <p>Angular · FastAPI · Hardhat · Polygon Mumbai</p>
+      <p>Team Insight Consultants 2026</p>
+    </div>
+    <p class="cert-hint">Certificate flows use {{ certificate.constructor.name }}.</p>
+  </footer>
+</div>

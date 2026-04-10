@@ -1,0 +1,10 @@
+<header class="topbar glass">
+  <div class="brand">
+    <span class="logo-gradient">SkillChain</span>
+  </div>
+  <div class="actions">
+    <span class="wallet-pill">{{ shorten(auth.getWallet()) }}</span>
+    <span class="role-pill" [ngClass]="roleClass(auth.getRole())">{{ auth.getRole() }}</span>
+    <button type="button" class="logout-btn" (click)="auth.logout()">Logout</button>
+  </div>
+</header>

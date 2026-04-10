@@ -1,0 +1,45 @@
+<div class="verify-page">
+  <h1 class="title">SkillChain Verify</h1>
+
+  @if (loading) {
+    <div class="card valid holo skeleton-verify glass-panel">
+      <div class="skeleton skeleton-line"></div>
+      <div class="skeleton skeleton-line short"></div>
+      <div class="skeleton skeleton-line"></div>
+      <div class="skeleton skeleton-line"></div>
+    </div>
+  }
+
+  @if (networkError) {
+    <div class="card invalid network">
+      <h2>Connection problem</h2>
+      <p>{{ networkError }}</p>
+    </div>
+  }
+
+  @if (certificate && !notFound && !networkError && !loading) {
+    <div class="card valid holo glass-panel card-hover-lift">
+      <h2>Valid certificate</h2>
+      <p><strong>Student:</strong> {{ certificate.studentName }}</p>
+      <p><strong>Course:</strong> {{ certificate.courseName }}</p>
+      <p><strong>Grade:</strong> {{ certificate.grade }}</p>
+      <p><strong>Wallet:</strong> {{ certificate.studentWallet }}</p>
+      <p><strong>Institution:</strong> {{ certificate.institution }}</p>
+      <p><strong>Issued:</strong> {{ certificate.issuedDate }}</p>
+      <div class="proof">
+        <p><strong>Token ID:</strong> {{ certificate.tokenId }}</p>
+        <p><strong>Network:</strong> Polygon Mumbai</p>
+        <p><strong>Status:</strong> {{ certificate.isRevoked ? 'Revoked' : 'Active' }}</p>
+      </div>
+    </div>
+  }
+
+  @if (notFound && !loading && !networkError) {
+    <div class="card invalid glass-panel">
+      <h2>Certificate not found</h2>
+      <p>This token ID does not exist in SkillChain records.</p>
+    </div>
+  }
+
+  <footer class="badge-bottom">Secured by SkillChain</footer>
+</div>

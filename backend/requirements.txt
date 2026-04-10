@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+web3
+pyjwt
+python-dotenv
+google-genai

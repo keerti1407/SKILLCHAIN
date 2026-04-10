@@ -1,0 +1,57 @@
+<div class="login-page">
+  <div class="bg-anim" aria-hidden="true"></div>
+
+  <div class="role-row">
+    <button
+      type="button"
+      class="role-pill institution"
+      [class.active]="selectedRole === 'institution'"
+      (click)="selectRole('institution')"
+    >
+      Institution
+    </button>
+    <button
+      type="button"
+      class="role-pill student"
+      [class.active]="selectedRole === 'student'"
+      (click)="selectRole('student')"
+    >
+      Student
+    </button>
+    <button
+      type="button"
+      class="role-pill employer"
+      [class.active]="selectedRole === 'employer'"
+      (click)="selectRole('employer')"
+    >
+      Employer
+    </button>
+  </div>
+
+  <div class="card glass" [class]="cardClass()">
+    <p class="welcome">{{ welcomeMessage() }}</p>
+    <h1>Sign in</h1>
+
+    <label class="field">
+      <span>Username</span>
+      <input [(ngModel)]="username" name="username" autocomplete="username" />
+    </label>
+    <label class="field">
+      <span>Password</span>
+      <input [(ngModel)]="password" name="password" type="password" autocomplete="current-password" />
+    </label>
+
+    @if (errorMessage) {
+      <p class="err">{{ errorMessage }}</p>
+    }
+
+    <button type="button" class="submit" [disabled]="loading" (click)="submit()">
+      {{ loading ? 'Signing in…' : 'Login' }}
+    </button>
+
+    <p class="hint">
+      Demo: institution1 / institution123 · student1 / student123 · employer1 / employer123
+    </p>
+    <a routerLink="/home" class="back">← Back to home</a>
+  </div>
+</div>
