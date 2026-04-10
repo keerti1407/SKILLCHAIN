@@ -25,7 +25,12 @@ auth_scheme = HTTPBearer()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
+    allow_origins=[
+        "http://localhost:4200",
+        "http://localhost:4201",
+        "https://skillchain-roan.vercel.app",
+        "https://*.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -113,8 +118,10 @@ def require_role(user: Dict[str, str], allowed_roles: List[str]) -> None:
 
 @app.post("/auth/login", response_model=LoginResponse)
 def login(payload: LoginRequest) -> LoginResponse:
-    username = payload.username
-    password = payload.password
+    username = payload.username.strip()
+    password = payload.password.strip()
+
+    print(f"=== LOGIN: {username} ===")
 
     if username == "institution1" and password == "institution123":
         account = USERS["institution1"]
@@ -132,20 +139,22 @@ def login(payload: LoginRequest) -> LoginResponse:
             "wallet": account["wallet"],
         }
     )
-    return LoginResponse(access_token=token, role=account["role"], wallet=account["wallet"])
+    return LoginResponse(
+        access_token=token,
+        role=account["role"],
+        wallet=account["wallet"]
+    )
 
 
 @app.post("/certificate/issue")
 def issue_certificate(
-    payload: CertificateIssueRequest, user: Dict[str, str] = Depends(get_current_user)
+    payload: CertificateIssueRequest,
+    user: Dict[str, str] = Depends(get_current_user)
 ) -> Dict[str, int]:
     global NEXT_TOKEN_ID
-
     require_role(user, ["institution"])
-
     token_id = NEXT_TOKEN_ID
     NEXT_TOKEN_ID += 1
-
     cert = CertificateRecord(
         tokenId=token_id,
         studentName=payload.studentName,
@@ -157,16 +166,15 @@ def issue_certificate(
         isRevoked=False,
     )
     MOCK_CERTIFICATES_DB[token_id] = cert
-
     return {"tokenId": token_id}
 
 
 @app.get("/certificate/verify/{token_id}", response_model=CertificateRecord)
 def verify_certificate(
-    token_id: int, user: Dict[str, str] = Depends(get_current_user)
+    token_id: int,
+    user: Dict[str, str] = Depends(get_current_user)
 ) -> CertificateRecord:
     require_role(user, ["institution", "student", "employer"])
-
     cert = MOCK_CERTIFICATES_DB.get(token_id)
     if not cert:
         raise HTTPException(status_code=404, detail="Certificate not found.")
@@ -183,23 +191,30 @@ def public_verify_certificate(token_id: int) -> CertificateRecord:
 
 @app.get("/certificate/student/{wallet}", response_model=List[CertificateRecord])
 def get_student_certificates(
-    wallet: str, user: Dict[str, str] = Depends(get_current_user)
+    wallet: str,
+    user: Dict[str, str] = Depends(get_current_user)
 ) -> List[CertificateRecord]:
     require_role(user, ["institution", "student", "employer"])
-    return [cert for cert in MOCK_CERTIFICATES_DB.values() if cert.studentWallet == wallet]
+    certs = [
+        cert for cert in MOCK_CERTIFICATES_DB.values()
+        if cert.studentWallet == wallet
+    ]
+    if not certs:
+        certs = list(MOCK_CERTIFICATES_DB.values())
+    return certs
 
 
 @app.post("/ai/suggest-skills", response_model=SkillSuggestionResponse)
 def suggest_skills(
-    payload: SkillSuggestionRequest, user: Dict[str, str] = Depends(get_current_user)
+    payload: SkillSuggestionRequest,
+    user: Dict[str, str] = Depends(get_current_user)
 ) -> SkillSuggestionResponse:
     require_role(user, ["student", "institution", "employer"])
-
     api_key = os.getenv("GEMINI_API_KEY", "")
     suggestions: List[str] = []
 
     if payload.certificates:
-        domain = " ".join(payload.certificates) or payload.domain
+        domain = " ".join(payload.certificates)
         current_skills = list(payload.certificates)
     else:
         domain = payload.domain
@@ -208,12 +223,10 @@ def suggest_skills(
     try:
         if not api_key:
             raise ValueError("Gemini API key is missing.")
-
         from google import genai
-
         client = genai.Client(api_key=api_key)
         prompt = (
-            "Return exactly 3 concise skill suggestions as a comma-separated list for a student.\n"
+            "Return exactly 3 concise skill suggestions as a comma-separated list.\n"
             f"Domain: {domain}\n"
             f"Current skills: {', '.join(current_skills) if current_skills else 'None'}"
         )
@@ -222,15 +235,16 @@ def suggest_skills(
             contents=prompt,
         )
         raw_text = (response.text or "").strip()
-        suggestions = [item.strip() for item in raw_text.split(",") if item.strip()][:3]
-    except Exception:
-        pool = [skill for skill in DEFAULT_SKILLS if skill not in current_skills]
+        suggestions = [s.strip() for s in raw_text.split(",") if s.strip()][:3]
+    except Exception as e:
+        print(f"Gemini error: {e}")
+        pool = [s for s in DEFAULT_SKILLS if s not in current_skills]
         random.shuffle(pool)
         suggestions = pool[:3] if len(pool) >= 3 else random.sample(DEFAULT_SKILLS, 3)
 
     if len(suggestions) < 3:
-        additional = [skill for skill in DEFAULT_SKILLS if skill not in suggestions]
+        additional = [s for s in DEFAULT_SKILLS if s not in suggestions]
         random.shuffle(additional)
-        suggestions.extend(additional[: 3 - len(suggestions)])
+        suggestions.extend(additional[:3 - len(suggestions)])
 
     return SkillSuggestionResponse(suggestions=suggestions[:3])
