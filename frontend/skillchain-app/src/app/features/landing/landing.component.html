@@ -6,7 +6,7 @@
         @if (auth.isLoggedIn()) {
           <span class="hint">Wallet: {{ shortWallet() }}</span>
         }
-        <a routerLink="/login" class="btn-login">Login</a>
+        <a routerLink="/login" class="btn-login btn-interactive">Login</a>
       </div>
     </div>
   </nav>
@@ -18,8 +18,8 @@
         SkillChain turns achievements into NFT certificates — verifiable by anyone, owned by learners.
       </p>
       <div class="cta-row">
-        <a routerLink="/login" [queryParams]="{ role: 'student' }" class="btn primary">Start as Student</a>
-        <a routerLink="/verify/1" class="btn ghost">Try public verify</a>
+        <a routerLink="/login" [queryParams]="{ role: 'student' }" class="btn primary btn-interactive">Start as Student</a>
+        <a routerLink="/verify/1" class="btn ghost btn-interactive">Try public verify</a>
       </div>
       <p class="tiny">Web3 service ready: {{ web3.getWalletAddress() ? 'wallet linked' : 'connect from student dashboard' }}</p>
     </div>
@@ -64,23 +64,27 @@
   </section>
 
   <section class="section roles">
-    <h2>Who can use SkillChain</h2>
-    <div class="role-grid">
-      <article class="role-card institution">
-        <h3>Institution</h3>
-        <p>Issue credentials to cohorts with one control center.</p>
-        <a routerLink="/login" [queryParams]="{ role: 'institution' }" class="role-btn">Login as Institution</a>
-      </article>
-      <article class="role-card student">
-        <h3>Student</h3>
-        <p>Collect your Skill Passport as soulbound-style proofs.</p>
-        <a routerLink="/login" [queryParams]="{ role: 'student' }" class="role-btn">Login as Student</a>
-      </article>
-      <article class="role-card employer">
-        <h3>Employer</h3>
-        <p>Verify candidates before the first interview.</p>
-        <a routerLink="/login" [queryParams]="{ role: 'employer' }" class="role-btn">Login as Employer</a>
-      </article>
+    <h2 class="important-heading">Who can use SkillChain</h2>
+    <div class="gradient-border-wrap roles-wrap card-hover-lift">
+      <div class="inner roles-inner">
+        <div class="role-grid">
+          <article class="role-card institution card-hover-lift">
+            <h3>Institution</h3>
+            <p>Issue credentials to cohorts with one control center.</p>
+            <a routerLink="/login" [queryParams]="{ role: 'institution' }" class="role-btn btn-interactive">Login as Institution</a>
+          </article>
+          <article class="role-card student card-hover-lift">
+            <h3>Student</h3>
+            <p>Collect your Skill Passport as soulbound-style proofs.</p>
+            <a routerLink="/login" [queryParams]="{ role: 'student' }" class="role-btn btn-interactive">Login as Student</a>
+          </article>
+          <article class="role-card employer card-hover-lift">
+            <h3>Employer</h3>
+            <p>Verify candidates before the first interview.</p>
+            <a routerLink="/login" [queryParams]="{ role: 'employer' }" class="role-btn btn-interactive">Login as Employer</a>
+          </article>
+        </div>
+      </div>
     </div>
   </section>
 

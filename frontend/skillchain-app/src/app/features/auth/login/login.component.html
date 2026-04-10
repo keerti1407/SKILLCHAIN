@@ -45,7 +45,7 @@
       <p class="err">{{ errorMessage }}</p>
     }
 
-    <button type="button" class="submit" [disabled]="loading" (click)="submit()">
+    <button type="button" class="submit btn-interactive" [disabled]="loading" (click)="submit()">
       {{ loading ? 'Signing in…' : 'Login' }}
     </button>
 

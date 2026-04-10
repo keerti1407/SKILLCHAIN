@@ -5,6 +5,6 @@
   <div class="actions">
     <span class="wallet-pill">{{ shorten(auth.getWallet()) }}</span>
     <span class="role-pill" [ngClass]="roleClass(auth.getRole())">{{ auth.getRole() }}</span>
-    <button type="button" class="logout-btn" (click)="auth.logout()">Logout</button>
+    <button type="button" class="logout-btn btn-interactive" (click)="auth.logout()">Logout</button>
   </div>
 </header>

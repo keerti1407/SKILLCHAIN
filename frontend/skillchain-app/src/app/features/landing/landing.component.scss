@@ -292,6 +292,33 @@
   font-size: 0.95rem;
 }
 
+.roles-wrap {
+  margin-top: 0.5rem;
+}
+
+.roles-inner {
+  padding: 1.25rem;
+}
+
+.important-heading {
+  background: linear-gradient(90deg, #8b5cf6, #ec4899, #06b6d4);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: grad-head 6s ease infinite;
+}
+
+@keyframes grad-head {
+  0%,
+  100% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+}
+
 .roles .role-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
