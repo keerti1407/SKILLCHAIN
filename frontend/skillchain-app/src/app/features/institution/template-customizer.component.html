@@ -1,0 +1,259 @@
+<div class="customizer-layout">
+  <!-- LEFT: Controls -->
+  <div class="controls-panel">
+
+    <!-- COLORS -->
+    <div class="control-section">
+      <h3 class="section-title">
+        <span class="icon">🎨</span> Colors
+      </h3>
+      <div class="color-grid">
+        <label class="color-item" for="color-primary">
+          <span class="color-label">Primary / Border</span>
+          <div class="color-input-wrap">
+            <input type="color" id="color-primary" [(ngModel)]="template.primaryColor" />
+            <span class="color-hex">{{ template.primaryColor }}</span>
+          </div>
+        </label>
+        <label class="color-item" for="color-bg">
+          <span class="color-label">Background</span>
+          <div class="color-input-wrap">
+            <input type="color" id="color-bg" [(ngModel)]="template.backgroundColor" />
+            <span class="color-hex">{{ template.backgroundColor }}</span>
+          </div>
+        </label>
+        <label class="color-item" for="color-text">
+          <span class="color-label">Text</span>
+          <div class="color-input-wrap">
+            <input type="color" id="color-text" [(ngModel)]="template.textColor" />
+            <span class="color-hex">{{ template.textColor }}</span>
+          </div>
+        </label>
+        <label class="color-item" for="color-accent">
+          <span class="color-label">Accent</span>
+          <div class="color-input-wrap">
+            <input type="color" id="color-accent" [(ngModel)]="template.accentColor" />
+            <span class="color-hex">{{ template.accentColor }}</span>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- LOGO -->
+    <div class="control-section">
+      <h3 class="section-title">
+        <span class="icon">🏛️</span> Institution Logo
+      </h3>
+      <div class="logo-upload-area">
+        @if (template.logoDataUrl) {
+          <div class="logo-preview-mini">
+            <img [src]="template.logoDataUrl" alt="Logo preview" />
+            <button type="button" class="remove-logo-btn" (click)="removeLogo()">✕</button>
+          </div>
+        } @else {
+          <label class="upload-zone" for="logo-upload">
+            <span class="upload-icon">📁</span>
+            <span>Click to upload logo</span>
+            <span class="upload-hint">PNG, JPG — max 2MB</span>
+          </label>
+        }
+        <input type="file" id="logo-upload" accept="image/*" (change)="onLogoUpload($event)" hidden #logoInput />
+      </div>
+      <div class="logo-position-group">
+        <span class="mini-label">Position:</span>
+        <div class="position-buttons">
+          <button type="button" [class.active]="template.logoPosition === 'left'" (click)="template.logoPosition = 'left'">Left</button>
+          <button type="button" [class.active]="template.logoPosition === 'center'" (click)="template.logoPosition = 'center'">Center</button>
+          <button type="button" [class.active]="template.logoPosition === 'right'" (click)="template.logoPosition = 'right'">Right</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEADER TEXT -->
+    <div class="control-section">
+      <h3 class="section-title">
+        <span class="icon">✏️</span> Header Text
+      </h3>
+      <label class="text-field">
+        <span>Institution Name</span>
+        <input type="text" [(ngModel)]="template.institutionName" placeholder="NDIM Delhi" />
+      </label>
+      <label class="text-field">
+        <span>Certificate Title</span>
+        <input type="text" [(ngModel)]="template.certificateTitle" placeholder="Certificate of Completion" />
+      </label>
+      <label class="text-field">
+        <span>Subtitle</span>
+        <input type="text" [(ngModel)]="template.subtitle" placeholder="This is to certify that" />
+      </label>
+    </div>
+
+    <!-- FOOTER TEXT -->
+    <div class="control-section">
+      <h3 class="section-title">
+        <span class="icon">📝</span> Footer Text
+      </h3>
+      <label class="text-field">
+        <span>Signatory Name</span>
+        <input type="text" [(ngModel)]="template.signatoryName" placeholder="Dr. Anuj Nain" />
+      </label>
+      <label class="text-field">
+        <span>Signatory Designation</span>
+        <input type="text" [(ngModel)]="template.signatoryDesignation" placeholder="Director, NDIM Delhi" />
+      </label>
+      <label class="text-field">
+        <span>Footer Note</span>
+        <input type="text" [(ngModel)]="template.footerNote" placeholder="Verified on SkillChain Blockchain" />
+      </label>
+    </div>
+
+    <!-- DESIGN STYLE -->
+    <div class="control-section">
+      <h3 class="section-title">
+        <span class="icon">🎭</span> Design Style
+      </h3>
+      <div class="style-grid">
+        @for (s of designStyles; track s.key) {
+          <button type="button"
+                  class="style-card"
+                  [class.active]="template.designStyle === s.key"
+                  (click)="selectStyle(s.key)">
+            <span class="style-name">{{ s.label }}</span>
+            <span class="style-desc">{{ s.desc }}</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- CERTIFICATE ELEMENTS -->
+    <div class="control-section">
+      <h3 class="section-title">
+        <span class="icon">⚙️</span> Certificate Elements
+      </h3>
+      <div class="toggle-list">
+        <label class="toggle-item" for="toggle-qr">
+          <span>Show QR Code</span>
+          <div class="toggle-switch">
+            <input type="checkbox" id="toggle-qr" [(ngModel)]="template.showQrCode" />
+            <span class="slider"></span>
+          </div>
+        </label>
+        <label class="toggle-item" for="toggle-blockchain">
+          <span>Show Blockchain Badge</span>
+          <div class="toggle-switch">
+            <input type="checkbox" id="toggle-blockchain" [(ngModel)]="template.showBlockchainBadge" />
+            <span class="slider"></span>
+          </div>
+        </label>
+        <label class="toggle-item" for="toggle-logo">
+          <span>Show Institution Logo</span>
+          <div class="toggle-switch">
+            <input type="checkbox" id="toggle-logo" [(ngModel)]="template.showLogo" />
+            <span class="slider"></span>
+          </div>
+        </label>
+        <label class="toggle-item" for="toggle-grade">
+          <span>Show Grade Badge</span>
+          <div class="toggle-switch">
+            <input type="checkbox" id="toggle-grade" [(ngModel)]="template.showGradeBadge" />
+            <span class="slider"></span>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- SAVE + DOWNLOAD -->
+    <div class="action-buttons">
+      <button type="button" class="save-btn btn-interactive" (click)="saveTemplate()">
+        💾 Save Template
+      </button>
+      <button type="button" class="download-btn btn-interactive" (click)="downloadSamplePDF()">
+        📄 Download Sample PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- RIGHT: Live Preview -->
+  <div class="preview-panel">
+    <h3 class="preview-title">Live Preview</h3>
+    <div class="preview-frame"
+         [ngStyle]="getPreviewBorderStyle()"
+         [style.background]="template.backgroundColor">
+
+      <!-- Logo area -->
+      @if (template.showLogo && template.logoDataUrl) {
+        <div class="cert-logo" [class.pos-left]="template.logoPosition === 'left'" [class.pos-center]="template.logoPosition === 'center'" [class.pos-right]="template.logoPosition === 'right'">
+          <img [src]="template.logoDataUrl" alt="Institution Logo" />
+        </div>
+      }
+
+      <!-- Institution Name -->
+      <div class="cert-institution" [style.color]="template.accentColor">
+        {{ template.institutionName || 'Institution Name' }}
+      </div>
+
+      <!-- Title -->
+      <div class="cert-title" [style.color]="template.primaryColor">
+        {{ template.certificateTitle || 'Certificate of Completion' }}
+      </div>
+
+      <!-- Subtitle -->
+      <div class="cert-subtitle" [style.color]="template.textColor + 'cc'">
+        {{ template.subtitle || 'This is to certify that' }}
+      </div>
+
+      <!-- Student Name -->
+      <div class="cert-student" [style.color]="template.textColor"
+           [style.border-bottom-color]="template.accentColor">
+        [Student Name]
+      </div>
+
+      <!-- Course -->
+      <div class="cert-course" [style.color]="template.textColor + 'dd'">
+        has successfully completed <strong [style.color]="template.accentColor">[Course Name]</strong>
+      </div>
+
+      <!-- Grade Badge -->
+      @if (template.showGradeBadge) {
+        <div class="cert-grade-badge" [style.background]="template.primaryColor + '30'" [style.border-color]="template.primaryColor" [style.color]="template.primaryColor">
+          Grade: [Grade]
+        </div>
+      }
+
+      <!-- Date & Token -->
+      <div class="cert-meta" [style.color]="template.textColor + 'aa'">
+        <span>Date: [Date]</span>
+        <span>Token ID: [Token ID]</span>
+      </div>
+
+      <!-- Bottom section -->
+      <div class="cert-bottom">
+        <!-- QR Code placeholder -->
+        @if (template.showQrCode) {
+          <div class="cert-qr" [style.border-color]="template.primaryColor + '60'">
+            <div class="qr-placeholder" [style.color]="template.textColor + '88'">QR</div>
+          </div>
+        }
+
+        <!-- Signatory -->
+        <div class="cert-signatory">
+          <div class="sign-line" [style.border-color]="template.accentColor"></div>
+          <div class="sign-name" [style.color]="template.textColor">{{ template.signatoryName || 'Signatory' }}</div>
+          <div class="sign-designation" [style.color]="template.textColor + 'aa'">{{ template.signatoryDesignation || 'Designation' }}</div>
+        </div>
+
+        <!-- Blockchain badge -->
+        @if (template.showBlockchainBadge) {
+          <div class="cert-blockchain" [style.background]="template.primaryColor + '25'" [style.border-color]="template.primaryColor + '60'" [style.color]="template.primaryColor">
+            ⛓️ Blockchain Verified
+          </div>
+        }
+      </div>
+
+      <!-- Footer -->
+      <div class="cert-footer" [style.color]="template.textColor + '66'">
+        {{ template.footerNote || 'Footer text' }}
+      </div>
+    </div>
+  </div>
+</div>

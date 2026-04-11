@@ -44,3 +44,30 @@ class SkillSuggestionRequest(BaseModel):
 
 class SkillSuggestionResponse(BaseModel):
     suggestions: List[str]
+
+
+class BulkCertificateItem(BaseModel):
+    studentName: str
+    studentWallet: str
+    courseName: str
+    grade: str
+    institution: str
+
+
+class BulkIssueRequest(BaseModel):
+    certificates: List[BulkCertificateItem]
+
+
+class BulkIssueResultItem(BaseModel):
+    studentName: str
+    courseName: str
+    grade: str
+    tokenId: int | None = None
+    status: str  # "success" | "failed"
+    error: str | None = None
+
+
+class BulkIssueResponse(BaseModel):
+    results: List[BulkIssueResultItem]
+    successCount: int
+    failedCount: int

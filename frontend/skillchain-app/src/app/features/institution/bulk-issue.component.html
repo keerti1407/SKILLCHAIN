@@ -1,0 +1,252 @@
+<div class="bulk-issue-container">
+
+  <!-- STEP 1: Download Template & Upload -->
+  @if (currentStep === 1) {
+    <div class="step-section fade-in">
+      <div class="step-header">
+        <div class="step-badge">1</div>
+        <div>
+          <h3>Upload Student Data</h3>
+          <p class="step-desc">Download our CSV template, fill in student details, and upload it here.</p>
+        </div>
+      </div>
+
+      <button type="button" class="template-download-btn btn-interactive" (click)="downloadCsvTemplate()">
+        <span class="btn-icon">📥</span> Download CSV Template
+      </button>
+
+      <div class="drop-zone"
+           [class.drag-over]="isDragOver"
+           (dragover)="onDragOver($event)"
+           (dragleave)="onDragLeave($event)"
+           (drop)="onDrop($event)"
+           (click)="fileInput.click()">
+        <div class="drop-icon">📄</div>
+        <div class="drop-text">
+          <strong>Drag & drop your CSV / Excel file here</strong>
+          <span>or click to browse</span>
+        </div>
+        <div class="drop-formats">Accepts .csv and .xlsx</div>
+      </div>
+      <input type="file" accept=".csv,.xlsx,.xls" (change)="onFileSelect($event)" hidden #fileInput />
+    </div>
+  }
+
+  <!-- STEP 2: Preview Table -->
+  @if (currentStep === 2) {
+    <div class="step-section fade-in">
+      <div class="step-header">
+        <div class="step-badge">2</div>
+        <div>
+          <h3>Review Students</h3>
+          <p class="step-desc">{{ parsedRows.length }} certificates ready to mint from <strong>{{ fileName }}</strong></p>
+        </div>
+      </div>
+
+      <div class="preview-table-wrap">
+        <table class="preview-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student Name</th>
+              <th>Course</th>
+              <th>Grade</th>
+              <th>Wallet Address</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of parsedRows; track row.walletAddress; let i = $index) {
+              <tr>
+                <td class="row-num">{{ i + 1 }}</td>
+                <td>{{ row.studentName }}</td>
+                <td>{{ row.courseName }}</td>
+                <td>{{ row.grade }}</td>
+                <td class="wallet-cell">{{ row.walletAddress | slice:0:10 }}...{{ row.walletAddress | slice:-6 }}</td>
+                <td>
+                  <button type="button" class="delete-row-btn" (click)="removeRow(i)" title="Remove student">✕</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="step-actions">
+        <button type="button" class="back-btn btn-interactive" (click)="currentStep = 1">← Back</button>
+        <button type="button" class="next-btn btn-interactive" (click)="goToCustomize()">
+          Continue → Customize
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- STEP 3: Customize -->
+  @if (currentStep === 3) {
+    <div class="step-section fade-in">
+      <div class="step-header">
+        <div class="step-badge">3</div>
+        <div>
+          <h3>Customize Batch</h3>
+          <p class="step-desc">Set common fields for all {{ parsedRows.length }} certificates.</p>
+        </div>
+      </div>
+
+      <div class="customize-grid">
+        <label class="text-field">
+          <span>Institution Name</span>
+          <input type="text" [(ngModel)]="institution" placeholder="NDIM Delhi" />
+        </label>
+        <label class="text-field">
+          <span>Course Date</span>
+          <input type="date" [(ngModel)]="courseDate" />
+        </label>
+      </div>
+
+      @if (savedTemplates.length > 0) {
+        <div class="template-selector">
+          <span class="mini-label">Certificate Template:</span>
+          <div class="template-cards">
+            @for (tmpl of savedTemplates; track tmpl.name; let i = $index) {
+              <button type="button"
+                      class="tmpl-card"
+                      [class.active]="selectedTemplateIndex === i"
+                      (click)="selectedTemplateIndex = i">
+                <div class="tmpl-thumb" [style.border-color]="tmpl.primaryColor" [style.background]="tmpl.backgroundColor">
+                  <span [style.color]="tmpl.textColor">Aa</span>
+                </div>
+                <span class="tmpl-name">{{ tmpl.name || tmpl.designStyle }}</span>
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="step-actions">
+        <button type="button" class="back-btn btn-interactive" (click)="currentStep = 2">← Back</button>
+        <button type="button" class="next-btn btn-interactive" (click)="goToMint()">
+          Continue → Mint All
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- STEP 4: Mint All -->
+  @if (currentStep === 4) {
+    <div class="step-section fade-in">
+
+      @if (!mintingComplete) {
+        <div class="step-header">
+          <div class="step-badge">4</div>
+          <div>
+            <h3>Mint Certificates</h3>
+            <p class="step-desc">Ready to mint {{ parsedRows.length }} certificates on the blockchain.</p>
+          </div>
+        </div>
+
+        @if (!isMinting) {
+          <button type="button" class="mint-all-btn btn-interactive" (click)="mintAll()">
+            ⛓️ Mint All {{ parsedRows.length }} Certificates
+          </button>
+        }
+
+        @if (isMinting) {
+          <div class="minting-progress">
+            <div class="progress-label">
+              Minting certificate {{ mintCurrent }} of {{ mintTotal }}...
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" [style.width.%]="mintProgress"></div>
+            </div>
+            <div class="progress-percent">{{ mintProgress }}%</div>
+          </div>
+        }
+      }
+
+      @if (mintingComplete) {
+        <div class="mint-complete">
+          <div class="complete-header">
+            <div class="complete-icon">🎉</div>
+            <h3>Minting Complete!</h3>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card success-stat">
+              <span class="stat-num">{{ successCount }}</span>
+              <span class="stat-label">Minted</span>
+            </div>
+            @if (failedCount > 0) {
+              <div class="stat-card fail-stat">
+                <span class="stat-num">{{ failedCount }}</span>
+                <span class="stat-label">Failed</span>
+              </div>
+            }
+          </div>
+
+          <div class="results-table-wrap">
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>Student Name</th>
+                  <th>Course</th>
+                  <th>Grade</th>
+                  <th>Token ID</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of results; track r.tokenId ?? r.studentName) {
+                  <tr [class.row-success]="r.status === 'success'" [class.row-failed]="r.status === 'failed'">
+                    <td>{{ r.studentName }}</td>
+                    <td>{{ r.courseName }}</td>
+                    <td>{{ r.grade }}</td>
+                    <td class="token-id-cell">
+                      @if (r.tokenId !== null && r.tokenId !== undefined) {
+                        <span class="token-id-value">#{{ r.tokenId }}</span>
+                      } @else {
+                        <span class="token-id-na">—</span>
+                      }
+                    </td>
+                    <td>
+                      @if (r.status === 'success') {
+                        <span class="status-badge success-badge">✓ Success</span>
+                      } @else {
+                        <span class="status-badge fail-badge">✕ Failed</span>
+                      }
+                    </td>
+                    <td class="actions-cell">
+                      @if (r.status === 'success' && r.tokenId !== null) {
+                        <button type="button" class="copy-token-btn" (click)="copyTokenId(r.tokenId)" title="Copy Token ID">
+                          📋
+                        </button>
+                        <button type="button" class="verify-link-btn" (click)="viewCertificate(r.tokenId)" title="Verify Certificate">
+                          🔍 Verify
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div class="step-actions">
+            <button type="button" class="download-results-btn btn-interactive" (click)="downloadResultsCsv()">
+              📥 Download Results CSV
+            </button>
+            <button type="button" class="reset-btn btn-interactive" (click)="resetAll()">
+              🔄 Start New Batch
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (!mintingComplete) {
+        <div class="step-actions">
+          <button type="button" class="back-btn btn-interactive" [disabled]="isMinting" (click)="currentStep = 3">← Back</button>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -20,6 +20,29 @@ export interface SuggestSkillsResponse {
   suggestions: string[];
 }
 
+export interface BulkCertificateItem {
+  studentName: string;
+  studentWallet: string;
+  courseName: string;
+  grade: string;
+  institution: string;
+}
+
+export interface BulkIssueResultItem {
+  studentName: string;
+  courseName: string;
+  grade: string;
+  tokenId: number | null;
+  status: 'success' | 'failed';
+  error?: string;
+}
+
+export interface BulkIssueResponse {
+  results: BulkIssueResultItem[];
+  successCount: number;
+  failedCount: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CertificateService {
   public http = inject(HttpClient);
@@ -28,6 +51,13 @@ export class CertificateService {
     return this.http.post<IssueCertificateResponse>(
       `${environment.apiBaseUrl}/certificate/issue`,
       data
+    );
+  }
+
+  bulkIssueCertificates(certificates: BulkCertificateItem[]): Observable<BulkIssueResponse> {
+    return this.http.post<BulkIssueResponse>(
+      `${environment.apiBaseUrl}/certificate/bulk-issue`,
+      { certificates }
     );
   }
 
@@ -57,3 +87,4 @@ export class CertificateService {
     );
   }
 }
+

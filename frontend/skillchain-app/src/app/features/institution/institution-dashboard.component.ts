@@ -1,18 +1,23 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { CertificateRecord } from '../../core/models/certificate.model';
 import { CertificateService } from '../../core/services/certificate.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { TopbarComponent } from '../../shared/components/topbar/topbar.component';
+import { TemplateCustomizerComponent } from './template-customizer.component';
+import { BulkIssueComponent } from './bulk-issue.component';
 
 @Component({
   selector: 'app-institution-dashboard',
   standalone: true,
-  imports: [FormsModule, TopbarComponent],
+  imports: [FormsModule, CommonModule, TopbarComponent, TemplateCustomizerComponent, BulkIssueComponent],
   templateUrl: './institution-dashboard.component.html',
   styleUrl: './institution-dashboard.component.scss',
 })
 export class InstitutionDashboardComponent {
+  activeTab: 'issue' | 'customize' | 'bulk' = 'issue';
+
   studentName = '';
   courseName = '';
   grade = '';

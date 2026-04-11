@@ -6,72 +6,116 @@
     <p>Issue SkillChain NFT certificates to learner wallets.</p>
   </header>
 
-  <div class="gradient-border-wrap form-outer card-hover-lift">
-    <section class="form-card inner glass glow">
-      <h2>Mint certificate</h2>
-      <div class="grid">
-        <label>
-          Student Name
-          <input [(ngModel)]="studentName" name="studentName" />
-        </label>
-        <label>
-          Course Name
-          <input [(ngModel)]="courseName" name="courseName" />
-        </label>
-        <label>
-          Grade
-          <input [(ngModel)]="grade" name="grade" />
-        </label>
-        <label>
-          Wallet Address
-          <input [(ngModel)]="studentWallet" name="studentWallet" />
-        </label>
-        <label class="full">
-          Institution
-          <input [(ngModel)]="institution" name="institution" />
-        </label>
-      </div>
-      @if (errorMessage) {
-        <p class="err">{{ errorMessage }}</p>
-      }
-      <button type="button" class="mint-btn btn-interactive" [disabled]="loadingMint" (click)="mint()">
-        {{ loadingMint ? 'Minting…' : 'Mint Certificate' }}
-      </button>
-    </section>
-  </div>
+  <!-- TAB BAR -->
+  <nav class="tab-bar" id="institution-tabs">
+    <button type="button"
+            class="tab-btn"
+            [class.active]="activeTab === 'issue'"
+            (click)="activeTab = 'issue'"
+            id="tab-issue">
+      <span class="tab-icon">🎓</span> Issue Certificate
+    </button>
+    <button type="button"
+            class="tab-btn"
+            [class.active]="activeTab === 'customize'"
+            (click)="activeTab = 'customize'"
+            id="tab-customize">
+      <span class="tab-icon">🎨</span> Customize Template
+    </button>
+    <button type="button"
+            class="tab-btn"
+            [class.active]="activeTab === 'bulk'"
+            (click)="activeTab = 'bulk'"
+            id="tab-bulk">
+      <span class="tab-icon">📦</span> Bulk Issue
+    </button>
+  </nav>
 
-  @if (successTokenId !== null) {
-    <div class="toast-inline success">
-      <div class="confetti" aria-hidden="true">
-        @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]; track i) {
-          <span class="bit" [style.--d]="i"></span>
-        }
+  <!-- TAB CONTENT: Issue Certificate -->
+  @if (activeTab === 'issue') {
+    <div class="tab-content fade-in">
+      <div class="gradient-border-wrap form-outer card-hover-lift">
+        <section class="form-card inner glass glow">
+          <h2>Mint certificate</h2>
+          <div class="grid">
+            <label>
+              Student Name
+              <input [(ngModel)]="studentName" name="studentName" />
+            </label>
+            <label>
+              Course Name
+              <input [(ngModel)]="courseName" name="courseName" />
+            </label>
+            <label>
+              Grade
+              <input [(ngModel)]="grade" name="grade" />
+            </label>
+            <label>
+              Wallet Address
+              <input [(ngModel)]="studentWallet" name="studentWallet" />
+            </label>
+            <label class="full">
+              Institution
+              <input [(ngModel)]="institution" name="institution" />
+            </label>
+          </div>
+          @if (errorMessage) {
+            <p class="err">{{ errorMessage }}</p>
+          }
+          <button type="button" class="mint-btn btn-interactive" [disabled]="loadingMint" (click)="mint()">
+            {{ loadingMint ? 'Minting…' : 'Mint Certificate' }}
+          </button>
+        </section>
       </div>
-      <p>Certificate minted! Token ID: <strong>{{ successTokenId }}</strong></p>
+
+      @if (successTokenId !== null) {
+        <div class="toast-inline success">
+          <div class="confetti" aria-hidden="true">
+            @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]; track i) {
+              <span class="bit" [style.--d]="i"></span>
+            }
+          </div>
+          <p>Certificate minted! Token ID: <strong>{{ successTokenId }}</strong></p>
+        </div>
+      }
+
+      <section class="list glass-panel card-hover-lift section-important">
+        <h2>Issued certificates</h2>
+        @if (issued.length === 0) {
+          <p class="empty">No certificates issued in this session yet.</p>
+        } @else {
+          <div class="table">
+            <div class="row head">
+              <span>ID</span>
+              <span>Student</span>
+              <span>Course</span>
+              <span>Grade</span>
+            </div>
+            @for (c of issued; track c.tokenId) {
+              <div class="row card-hover-lift">
+                <span>{{ c.tokenId }}</span>
+                <span>{{ c.studentName }}</span>
+                <span>{{ c.courseName }}</span>
+                <span>{{ c.grade }}</span>
+              </div>
+            }
+          </div>
+        }
+      </section>
     </div>
   }
 
-  <section class="list glass-panel card-hover-lift section-important">
-    <h2>Issued certificates</h2>
-    @if (issued.length === 0) {
-      <p class="empty">No certificates issued in this session yet.</p>
-    } @else {
-      <div class="table">
-        <div class="row head">
-          <span>ID</span>
-          <span>Student</span>
-          <span>Course</span>
-          <span>Grade</span>
-        </div>
-        @for (c of issued; track c.tokenId) {
-          <div class="row card-hover-lift">
-            <span>{{ c.tokenId }}</span>
-            <span>{{ c.studentName }}</span>
-            <span>{{ c.courseName }}</span>
-            <span>{{ c.grade }}</span>
-          </div>
-        }
-      </div>
-    }
-  </section>
+  <!-- TAB CONTENT: Customize Template -->
+  @if (activeTab === 'customize') {
+    <div class="tab-content fade-in">
+      <app-template-customizer />
+    </div>
+  }
+
+  <!-- TAB CONTENT: Bulk Issue -->
+  @if (activeTab === 'bulk') {
+    <div class="tab-content fade-in">
+      <app-bulk-issue />
+    </div>
+  }
 </div>

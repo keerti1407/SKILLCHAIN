@@ -10,6 +10,9 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from auth import create_access_token, decode_access_token
 from models import (
+    BulkIssueRequest,
+    BulkIssueResponse,
+    BulkIssueResultItem,
     CertificateIssueRequest,
     CertificateRecord,
     LoginRequest,
@@ -195,11 +198,14 @@ def get_student_certificates(
     user: Dict[str, str] = Depends(get_current_user)
 ) -> List[CertificateRecord]:
     require_role(user, ["institution", "student", "employer"])
+    print(f"=== STUDENT CERTS: wallet={wallet}, DB size={len(MOCK_CERTIFICATES_DB)} ===")
     certs = [
         cert for cert in MOCK_CERTIFICATES_DB.values()
-        if cert.studentWallet == wallet
+        if cert.studentWallet.lower() == wallet.lower()
     ]
+    print(f"    Matched {len(certs)} certs for wallet {wallet}")
     if not certs:
+        print(f"    No match — returning ALL {len(MOCK_CERTIFICATES_DB)} certs as fallback")
         certs = list(MOCK_CERTIFICATES_DB.values())
     return certs
 
@@ -248,3 +254,62 @@ def suggest_skills(
         suggestions.extend(additional[:3 - len(suggestions)])
 
     return SkillSuggestionResponse(suggestions=suggestions[:3])
+
+
+@app.post("/certificate/bulk-issue", response_model=BulkIssueResponse)
+def bulk_issue_certificates(
+    payload: BulkIssueRequest,
+    user: Dict[str, str] = Depends(get_current_user),
+) -> BulkIssueResponse:
+    """Mint multiple certificates in one request. Continues even if one fails."""
+    global NEXT_TOKEN_ID
+    require_role(user, ["institution"])
+
+    results: List[BulkIssueResultItem] = []
+    success_count = 0
+    failed_count = 0
+
+    for item in payload.certificates:
+        try:
+            token_id = NEXT_TOKEN_ID
+            NEXT_TOKEN_ID += 1
+            institution = item.institution or user.get("sub", "SkillChain")
+            cert = CertificateRecord(
+                tokenId=token_id,
+                studentName=item.studentName,
+                studentWallet=item.studentWallet,
+                courseName=item.courseName,
+                grade=item.grade,
+                institution=institution,
+                issuedDate=datetime.now(timezone.utc).isoformat(),
+                isRevoked=False,
+            )
+            MOCK_CERTIFICATES_DB[token_id] = cert
+            print(f"=== BULK MINT: token #{token_id} for {item.studentName} | {item.courseName} | wallet={item.studentWallet} ===")
+            results.append(
+                BulkIssueResultItem(
+                    studentName=item.studentName,
+                    courseName=item.courseName,
+                    grade=item.grade,
+                    tokenId=token_id,
+                    status="success",
+                )
+            )
+            success_count += 1
+        except Exception as e:
+            results.append(
+                BulkIssueResultItem(
+                    studentName=item.studentName,
+                    courseName=item.courseName,
+                    grade=item.grade,
+                    status="failed",
+                    error=str(e),
+                )
+            )
+            failed_count += 1
+
+    return BulkIssueResponse(
+        results=results,
+        successCount=success_count,
+        failedCount=failed_count,
+    )

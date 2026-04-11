@@ -62,6 +62,7 @@ export class StudentDashboardComponent implements OnInit {
       next: async (certs) => {
         this.certificates = certs;
         this.loadingCerts = false;
+        console.log('Student certificates:', certs);
         await this.populateQr();
       },
       error: (err) => {
